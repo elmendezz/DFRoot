@@ -49,8 +49,70 @@ jobs:
           name: df-lkm-${{ matrix.kmi }}
           path: out/dfroot-${{ matrix.kmi }}.ko
 
+  build-lkm-hawaiip:
+    name: LKM / Moto E22 (hawaiip / android12-4.19)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y --no-install-recommends \
+            git bc bison flex libssl-dev libelf-dev make python3 zip
+
+      - name: Clone Motorola kernel-mtk (hawaiip)
+        run: |
+          git clone --depth=1 \
+            -b MMI-STA32.79-13-2 \
+            https://github.com/MotorolaMobilityLLC/kernel-mtk.git \
+            kernel-mtk
+
+      - name: Download Android clang toolchain
+        run: |
+          mkdir -p toolchain
+          curl -L https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r450784d.tar.gz \
+            -o clang.tar.gz
+          tar -xzf clang.tar.gz -C toolchain
+          echo "$PWD/toolchain/bin" >> $GITHUB_PATH
+
+      - name: Prepare kernel headers
+        run: |
+          cd kernel-mtk
+          make -j$(nproc) \
+            ARCH=arm64 \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CC=clang \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            mt6765_defconfig
+          make -j$(nproc) \
+            ARCH=arm64 \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CC=clang \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            modules_prepare
+
+      - name: Build dfroot.ko (hawaiip)
+        run: |
+          cd lkm
+          make -j$(nproc) \
+            KDIR=$GITHUB_WORKSPACE/kernel-mtk \
+            ARCH=arm64 \
+            CROSS_COMPILE=aarch64-linux-gnu- \
+            CC=clang \
+            CLANG_TRIPLE=aarch64-linux-gnu- \
+            LLVM=1
+          mkdir -p $GITHUB_WORKSPACE/out
+          cp dfroot.ko $GITHUB_WORKSPACE/out/dfroot-android12-4.19-hawaiip.ko
+
+      - name: Upload dfroot.ko (hawaiip)
+        uses: actions/upload-artifact@v7
+        with:
+          name: df-lkm-android12-4.19-hawaiip
+          path: out/dfroot-android12-4.19-hawaiip.ko
+
   build-dfroot:
-    needs: build-lkms
+    needs: [build-lkms, build-lkm-hawaiip]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
