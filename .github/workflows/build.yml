@@ -62,11 +62,11 @@ jobs:
             git bc bison flex libssl-dev libelf-dev make python3 zip \
             clang lld llvm gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
-      - name: Clone Motorola kernel-mtk (hawaiip)
+      - name: Clone kernel (MT6765 / hawaiip)
         run: |
           git clone --depth=1 \
-            -b MMI-STA32.79-13-2 \
-            https://github.com/MotorolaMobilityLLC/kernel-mtk.git \
+            -b lineage-20 \
+            https://github.com/LineageOS/android_kernel_motorola_mt6765.git \
             kernel-mtk
 
       - name: Prepare kernel headers
@@ -77,7 +77,7 @@ jobs:
             CROSS_COMPILE=aarch64-linux-gnu- \
             CC=clang \
             CLANG_TRIPLE=aarch64-linux-gnu- \
-            mt6765_defconfig
+            k65v1_64_bsp_defconfig
           make -j$(nproc) \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
