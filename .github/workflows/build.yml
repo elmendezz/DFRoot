@@ -119,7 +119,7 @@ jobs:
 
 
       - name: Create signing.properties
-        if: secrets.KEYSTORE != ''
+        if: ${{ secrets.KEYSTORE != '' }}
         run: |
           echo KEYSTORE_FILE=../keystore.jks > signing.properties
           echo KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} >> signing.properties
