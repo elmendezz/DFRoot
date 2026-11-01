@@ -76,11 +76,13 @@ jobs:
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
             LLVM=1 \
+            JOURNEY_BUILD_SCRIPT=yes \
             k65v1_64_bsp_defconfig
           make -j$(nproc) \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
             LLVM=1 \
+            JOURNEY_BUILD_SCRIPT=yes \
             modules_prepare
 
       - name: Build dfroot.ko (hawaiip)
@@ -90,7 +92,8 @@ jobs:
             KDIR=$GITHUB_WORKSPACE/kernel-mtk \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
-            LLVM=1
+            LLVM=1 \
+            JOURNEY_BUILD_SCRIPT=yes
           mkdir -p $GITHUB_WORKSPACE/out
           cp dfroot.ko $GITHUB_WORKSPACE/out/dfroot-android12-4.19-hawaiip.ko
 
