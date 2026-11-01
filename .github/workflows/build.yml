@@ -59,7 +59,8 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y --no-install-recommends \
-            git bc bison flex libssl-dev libelf-dev make python3 zip
+            git bc bison flex libssl-dev libelf-dev make python3 zip \
+            clang lld llvm gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu
 
       - name: Clone Motorola kernel-mtk (hawaiip)
         run: |
@@ -67,14 +68,6 @@ jobs:
             -b MMI-STA32.79-13-2 \
             https://github.com/MotorolaMobilityLLC/kernel-mtk.git \
             kernel-mtk
-
-      - name: Download Android clang toolchain
-        run: |
-          mkdir -p toolchain
-          curl -L https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/master/clang-r450784d.tar.gz \
-            -o clang.tar.gz
-          tar -xzf clang.tar.gz -C toolchain
-          echo "$PWD/toolchain/bin" >> $GITHUB_PATH
 
       - name: Prepare kernel headers
         run: |
