@@ -65,8 +65,8 @@ jobs:
       - name: Clone kernel (MT6765 / hawaiip)
         run: |
           git clone --depth=1 \
-            -b lineage-20 \
-            https://github.com/LineageOS/android_kernel_motorola_mt6765.git \
+            -b android-12-release-STA32 \
+            https://github.com/MotorolaMobilityLLC/kernel-mtk.git \
             kernel-mtk
 
       - name: Prepare kernel headers
@@ -75,14 +75,12 @@ jobs:
           make -j$(nproc) \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
-            CC=clang \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
+            LLVM=1 \
             k65v1_64_bsp_defconfig
           make -j$(nproc) \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
-            CC=clang \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
+            LLVM=1 \
             modules_prepare
 
       - name: Build dfroot.ko (hawaiip)
@@ -92,8 +90,6 @@ jobs:
             KDIR=$GITHUB_WORKSPACE/kernel-mtk \
             ARCH=arm64 \
             CROSS_COMPILE=aarch64-linux-gnu- \
-            CC=clang \
-            CLANG_TRIPLE=aarch64-linux-gnu- \
             LLVM=1
           mkdir -p $GITHUB_WORKSPACE/out
           cp dfroot.ko $GITHUB_WORKSPACE/out/dfroot-android12-4.19-hawaiip.ko
